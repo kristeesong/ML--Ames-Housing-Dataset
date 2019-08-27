@@ -1,4 +1,4 @@
-# Ames
+# Ames Dataset
 Housing Data in Ames, Iowa
 https://www.kaggle.com/lespin/house-prices-dataset
 With a co-partner, entered a Public competition to use Machine Learning Methods to predict housing affordability based on 81 initial Variables and 3500 observations. Best accuracy for predictions was 97%.
