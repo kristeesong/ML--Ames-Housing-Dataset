@@ -1,0 +1,372 @@
+---
+title: "101c Final Report"
+author: "TEAM Low-Key (Lecture 2): Yoshimi Kina <yoshimikina@gmail.com>, Kristee Song<kristee.song@gmail.com>"
+date: "12/15/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Loading Data
+```{r}
+afford <- read.csv("HTrainLast.csv")
+afford.test <- read.csv("HTestLastNoY.csv")
+```
+
+
+#Cleaning Training Data (affordable)
+```{r}
+#Create new df "affordable"
+affordable <- data.frame("Neighborhood" = afford$Neighborhood)
+# 
+# #Lot Area
+# affordable["LotArea"] = afford$LotArea
+# 
+# #Lot Shape: IR and Reg
+# affordable["LotShape"] = afford$LotShape
+# affordable$LotShape <- ifelse(affordable$LotShape == "IR1" | affordable$LotShape == "IR2" | affordable$LotShape == "IR3", "IR", "Reg"  )
+# affordable$LotShape <- as.factor(affordable$LotShape)
+
+#Neighborhood
+affordable["Neighborhood"] = afford$Neighborhood
+
+#Neighbor: how much of the given total data in that neighborhood unaffordable?
+affordable["neighbor"] <- afford$Ob 
+#affordable$Neighborhood <- ifelse(affordable$Neighborhood == "Blmngtn" | affordable$Neighborhood == "ClearCr" | affordable$Neighborhood == "CollgCr" | affordable$Neighborhood == "Crawfor" | affordable$Neighborhood == "Gilbert" | affordable$Neighborhood == "NoRidge" | affordable$Neighborhood == "NridgHt" | affordable$Neighborhood == "NWAmes" | affordable$Neighborhood == "SawyerW" | affordable$Neighborhood == "Somerst" | affordable$Neighborhood == "StoneBr" | affordable$Neighborhood == "Timber" | affordable$Neighborhood == "Veenker", 1, 0)
+#affordable$Neighborhood <- as.factor(affordable$Neighborhood)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Blmngtn", 1, affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Blueste", .4375, affordable$neighbor) #percentage unaffordability
+affordable$neighbor <- ifelse(affordable$Neighborhood == "BrDale", 0.0,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "BrkSide", .1188811,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "ClearCr", .7916667,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Blmngtn", 1.0,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "CollgCr", .7070064,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Crawfor", .6637931,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Edwards", .1478261,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Gilbert", .8811881,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "IDOTRR", .04166667,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "MeadowV", 0.0,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Mitchel", 0.4495413,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "NAmes", .2089844,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "NoRidge", 1.0,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "NPkVill", .0952381,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "NridgHt", .9862385,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "NWAmes", .7572254,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "OldTown", .1011673,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Sawyer", .1295337,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "SawyerW", .7090909,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Somerst", .8956522,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "StoneBr", 1.0,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "SWISU", .2881356,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Timber", .9753086,affordable$neighbor)
+affordable$neighbor <- ifelse(affordable$Neighborhood == "Veenker", .9677419,affordable$neighbor)
+#affordable$neighbor <- as.numeric(affordable$Neighborhood)
+#affordable <- affordable[,-4]
+
+# #HouseStyle
+# affordable["HouseStyle"] <- afford$HouseStyle
+
+#Overall Quality
+affordable["Quality"] <- afford$OverallQual
+
+#Year Built
+affordable["Year"] <- afford$YearBuilt
+affordable["Year"] <- 2015-affordable$Year
+
+# #Remodel
+# affordable["Remodel"] <- afford$YearRemodAdd 
+# affordable$Remodel <- ifelse(afford$YearRemodAdd - afford$YearBuilt == 0 , 0, 1)
+# #affordable$Remodel <- as.factor(affordable$Remodel)
+
+# #Exterior 1st
+# affordable["Exterior1st"] <- afford$Exterior1st
+# 
+# #Masonry Veneer 
+# affordable["MasVnr"] <- afford$MasVnrArea
+# affordable$MasVnr <- ifelse(afford$MasVnrArea == 0, "False", "True")
+# #affordable$MasVnr <- as.factor(affordable$MasVnr)
+
+#Basment SQFT
+affordable["TotalBsmtSF"] <- afford$TotalBsmtSF
+
+# #Central Air
+# affordable["CentralAir"] <- afford$CentralAir
+
+#Bathrooms
+affordable["bathroom"] <- afford$FullBath + afford$HalfBath*.5
+
+# #Bedrooms
+# affordable["Bedroom"] <- afford$BedroomAbvGr
+# 
+# #Kitchen
+# affordable["Kitchen"] <- afford$KitchenAbvGr
+# 
+# #Total Rooms
+# affordable["TotalRooms"] <- afford$TotRmsAbvGrd
+
+#Garage Cars
+affordable["GarageCars"] <- afford$GarageCars
+# 
+# #Paved Drive
+# affordable["PavedDrive"] <- afford$PavedDrive
+# 
+# #Pool
+# affordable["Pool"] <- ifelse(afford$PoolArea == 0, 0, 1)
+# #affordable$Pool <- as.factor(affordable$Pool)
+
+#Affordability
+affordable["affordabilitty"] <- afford$affordabilitty
+
+#Get rid of NAs
+affordable <- na.omit(affordable)
+summary(affordable)
+```
+
+
+
+#Cleaning Testing Data (affordable.t)
+```{r}
+affordable.t <- data.frame("Neighborhood" = afford.test$Neighborhood)
+
+# #Lot Area
+# affordable.t["LotArea"] = afford.test$LotArea
+# 
+# #Lot Shape
+# affordable.t["LotShape"] = afford.test$LotShape
+# affordable.t$LotShape <- ifelse(affordable.t$LotShape == "IR1" | affordable.t$LotShape == "IR2" | affordable.t$LotShape == "IR3", "IR", "Reg"  )
+# affordable.t$LotShape <- as.factor(affordable.t$LotShape)
+
+#Neighborhood
+affordable.t["Neighborhood"] = afford.test$Neighborhood
+
+#Neighbor
+affordable.t["neighbor"]<- afford.test$Ob 
+#affordable$Neighborhood <- ifelse(affordable$Neighborhood == "Blmngtn" | affordable$Neighborhood == "ClearCr" | affordable$Neighborhood == "CollgCr" | affordable$Neighborhood == "Crawfor" | affordable$Neighborhood == "Gilbert" | affordable$Neighborhood == "NoRidge" | affordable$Neighborhood == "NridgHt" | affordable$Neighborhood == "NWAmes" | affordable$Neighborhood == "SawyerW" | affordable$Neighborhood == "Somerst" | affordable$Neighborhood == "StoneBr" | affordable$Neighborhood == "Timber" | affordable$Neighborhood == "Veenker", 1, 0)
+#affordable$Neighborhood <- as.factor(affordable$Neighborhood)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Blmngtn", 1, affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Blueste", .4375, affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "BrDale", 0.0,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "BrkSide", .1188811,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "ClearCr", .7916667,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Blmngtn", 1.0,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "CollgCr", .7070064,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Crawfor", .6637931,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Edwards", .1478261,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Gilbert", .8811881,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "IDOTRR", .04166667,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "MeadowV", 0.0,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Mitchel", 0.4495413,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "NAmes", .2089844,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "NoRidge", 1.0,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "NPkVill", .0952381,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "NridgHt", .9862385,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "NWAmes", .7572254,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "OldTown", .1011673,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Sawyer", .1295337,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "SawyerW", .7090909,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Somerst", .8956522,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "StoneBr", 1.0,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "SWISU", .2881356,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Timber", .9753086,affordable.t$neighbor)
+affordable.t$neighbor <- ifelse(affordable.t$Neighborhood == "Veenker", .9677419,affordable.t$neighbor)
+#affordable.t <- affordable.t[,-4]
+
+# #HouseStyle
+# affordable.t["HouseStyle"] <- afford.test$HouseStyle
+
+#Overall Quality
+affordable.t["Quality"] <- afford.test$OverallQual
+
+#Year Built
+affordable.t["Year"] <- afford.test$YearBuilt
+affordable.t["Year"] <- 2015-affordable.t$Year
+# 
+# #Remodel
+# affordable.t["Remodel"] <- afford.test$YearRemodAdd 
+# affordable.t$Remodel <- ifelse(afford.test$YearRemodAdd - afford.test$YearBuilt == 0 , 0, 1)
+# #affordable.t$Remodel <- as.factor(affordable.t$Remodel)
+# 
+# #Exterior 1st
+# affordable.t["Exterior1st"] <- afford.test$Exterior1st
+# 
+# #Masonry Veneer 
+# affordable.t["MasVnr"] <- afford.test$MasVnrArea
+# affordable.t$MasVnr <- ifelse(afford.test$MasVnrArea == 0, "False", "True")
+# #affordable.t$MasVnr <- as.factor(affordable.t$MasVnr)
+
+#Basment SQFT
+affordable.t["TotalBsmtSF"] <- afford.test$TotalBsmtSF
+affordable.t$TotalBsmtSF <- ifelse(is.na(affordable.t$TotalBsmtSF), 0, affordable.t$TotalBsmtSF)
+# 
+# #Central Air
+# affordable.t["CentralAir"] <- afford.test$CentralAir
+
+#Bathrooms
+affordable.t["bathroom"] <- afford.test$FullBath + afford.test$HalfBath*.5
+# 
+# #Bedrooms
+# affordable.t["Bedroom"] <- afford.test$BedroomAbvGr
+# 
+# #Kitchen
+# affordable.t["Kitchen"] <- afford.test$KitchenAbvGr
+# 
+# #Total Rooms
+# affordable.t["TotalRooms"] <- afford.test$TotRmsAbvGrd
+
+#Garage Cars
+affordable.t["GarageCars"] <- afford.test$GarageCars
+affordable.t$GarageCars <- ifelse(is.na(affordable.t$GarageCars), 0, affordable.t$GarageCars)
+# 
+# #Paved Drive
+# affordable.t["PavedDrive"] <- afford.test$PavedDrive
+# 
+# #Pool
+# affordable.t["Pool"] <- ifelse(afford.test$PoolArea == 0, 0, 1)
+# #affordable.t$Pool <- as.factor(affordable.t$Pool)
+
+#Affordability
+affordable.t["affordabilitty"] <- afford.test$affordabilitty
+
+
+summary(affordable.t)
+```
+
+#Cross Validation of Training Data: Training Vs Testing Data
+```{r}
+set.seed(5)
+train.ind=sample(seq_len(nrow(affordable)),size=.50*nrow(affordable),rep=FALSE)
+a.train<-affordable[train.ind,]
+a.test= affordable[-train.ind,]
+```
+
+#Trees
+```{r}
+require(tree)
+tree1=tree(affordabilitty~.,data=a.train)
+summary(tree1) 
+plot(tree1)
+text(tree1)
+jpeg("tree")
+plot(tree1)
+text(tree1)
+dev.off()
+
+```
+
+## Misclassification Rate for Trees 
+```{r}
+a.test$affordabilitty = factor(a.test$affordabilitty)
+preds=predict(tree1,newdata=a.test, type="class")
+preds.prob=predict(tree1,newdata=a.test,type="vector")
+head(preds.prob)
+conf.matrx=table(preds, a.test$affordabilitty)
+conf.matrx
+jpeg("confmatrix")
+conf.matrx
+dev.off()
+sum(preds != a.test$affordabilitty)/length(preds)
+misclass=(conf.matrx[2,1]+conf.matrx[1,2])/sum(conf.matrx)
+misclass
+```
+
+## CV Trees
+```{r}
+cv.train=cv.tree(tree1,FUN=prune.misclass)
+names(cv.train)
+plot(cv.train$dev~cv.train$size)
+pruned.fit <- prune.misclass(tree1, best = 4)
+summary(pruned.fit)
+pred.prune <- predict(pruned.fit, newdata = a.test, type = "class")
+table(pred.prune, a.test$affordabilitty)
+```
+
+# GLM 
+```{r}
+library(ISLR)
+library(MASS)
+library(class)
+library(ggplot2)
+library(caret)
+affordable <- na.omit(affordable)
+afford.l<- glm(affordabilitty ~. , family = binomial(), data = a.train)
+
+summary(afford.l)
+probablity <- predict(afford.l, a.test, type = "response")
+predicted <- rep("Affordable", length(probablity))
+predicted[probablity > 0.5] <- "Unaffordable"
+conf.matrx.glm <- table(predicted, a.test$affordabilitty)
+misclassglm <- (conf.matrx.glm[2,1]+conf.matrx.glm[1,2])/sum(conf.matrx.glm)
+misclassglm
+```
+
+#KNN
+```{r}
+scaled <- scale(affordable[,-c(1,8)])
+
+afford2 <- as.data.frame((cbind(scaled, Y = affordable$affordabilitty)))
+afford2$Y <- as.factor(afford2$Y)
+afford2 <- na.omit(afford2)
+
+train.ind=sample(seq_len(nrow(afford2)),size=.7*nrow(affordable),rep=FALSE)
+a.train<-afford2[train.ind,]
+a.test= afford2[-train.ind,]
+library(class)
+library(e1071)
+library(caret)
+knn.fit1 <- knn(a.train[,1:7], a.test[,1:7], a.train$Y, k = 1, prob = TRUE)
+ 
+
+confusionMatrix(knn.fit1, a.test$Y)
+
+
+trControl <- trainControl(method = "cv", number = 10)
+
+fit <- train(Y~., 
+             method = "knn",
+             tuneGrid = expand.grid(k=1:10),
+             trControl = trControl,
+             metric = "Accuracy",
+             data = afford2)
+fit
+```
+
+#Random Forest
+```{r}
+#Training 
+
+  #50/50 bootstrap training sample
+  library(tree)
+  set.seed(12345)
+  train = affordable[c(sample(1:nrow(affordable), .50*nrow(affordable))),]
+  test = affordable[-c(sample(1:nrow(affordable), .50*nrow(affordable))),]
+  #random forest
+  library(randomForest)
+  set.seed(12345)
+    #one tree, modeled by full non-validation set with ntree = 100
+    p = 7
+    m = sqrt(p)
+    bag.100=randomForest(affordabilitty~.,data=train,mtry=m,importance=TRUE, ntree=100)
+    #compared to validation Y
+    prediction.train<-predict(bag.100,test[,-8], type ="cl")
+    plot(prediction.train,test[,8],ylab="Actual values",xlab="Estimated values using RF")
+    abline(0,1)
+    title("Plotting Actual vs Predicted Values")
+    #diagnostics
+    print(bag.100)
+    summary(bag.100)
+    mean(((prediction.train)-test[,8])^2)
+    importance(bag.100)
+    varImpPlot (bag.100) #overall quality is important
+    print(bag.100)
+  #finally,
+  bag.100.2=randomForest(affordabilitty~.,data=affordable,mtry=m,importance=TRUE, ntree=100)
+  prediction.training<-predict(bag.100.2,test[,-8], type ="cl")
+  print(bag.100.2)
+
+#Testing Data
+  prediction.test<- predict(bag.100.2,affordable.t, type ="cl")
+  prediction.test <- data.frame("Ob" = 1:1500, "Affordabilitty" = prediction.test)
+  write.csv(prediction.test, file = "rf.csv", row.names = FALSE)
+```
